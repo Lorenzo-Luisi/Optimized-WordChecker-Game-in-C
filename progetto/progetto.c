@@ -3,26 +3,29 @@
 #include <string.h>
 char *lett;
 int contenitore,counter;
-//STRUTTURA ALBERO PER PAROLE POSSIBILI
+
+/* Start of tree structure declarations */
+//knot
 typedef struct node{
     enum {red , black} colore;
     struct node *p,*left, *right;
-    char parola[];//la parola associata al nodo
+    char parola[];
 }RBTree;
+//tree
 typedef struct{
     struct node *nil;
     struct node *root;
 }Albero;
 
-//LISTA PER PAROLE FILTRATE
+/* Start of list structure of the filtered words declaration */
 typedef struct nodo{
-    struct nodo *next;//puntatore al prossimo nodo delle parole filtrate
-    struct node *x;//puntatore al nodo dell'albero. non alloco di nuovo altra memoria, ma utilizzo un semplice puntatore che punta al nodo dell'albero desiderato
+    struct nodo *next;
+    struct node *x;
 }Filtrate;
 
 
-//STRUCT PER I VINCOLI
-//lista con le lettere che sono presenti e i relativi vincoli
+/* Start of list structure of the constraints declaration */
+//list of letters present in the word
 typedef struct p{
     struct p *next;
     char Simbolo;
@@ -31,15 +34,16 @@ typedef struct p{
     char alterato;
     char posS[];
 }Inside;
-//lista con le lettere che non sono presenti
+//list of letters not present in the word
 typedef struct n{
     struct n *next;
     char Simbolo;
 }NotIn;
 
-//ALGORITMI DI ORDINAMENTO
+//SORTING ALGORITHMS
 
-//ordina la parola (array, inizio, fine)
+//QUICKSORT
+//sort the word (array, start, end)
 int Partition(char *A, int p, int r){
     char swap;
     int j;
@@ -58,7 +62,6 @@ int Partition(char *A, int p, int r){
     A[r]=swap;
     return i+1;
 }
-
 void Quicksort(char *A, int p, int r){
     int q;
     if(p<r){
@@ -68,15 +71,13 @@ void Quicksort(char *A, int p, int r){
     }
 }
 
-//MERGE SORT ADATTATO ALLE LISTE
+//MERGE SORT for lists
 Filtrate *OrdinaLista(Filtrate *primo,Filtrate *secondo){
     Filtrate *risult=NULL;
-    //caso base
     if(primo==NULL)
         return secondo;
     else if(secondo==NULL)
         return primo;
-    //chiamata ricorsiva per per ordinamento
     if(strcmp(primo->x->parola,secondo->x->parola)<0){
         risult=primo;
         risult->next= OrdinaLista(primo->next,secondo);
@@ -91,7 +92,6 @@ void DividiLista(Filtrate *ori, Filtrate **prima, Filtrate **seconda){
     Filtrate *p1,*p2;
     p2=ori;
     p1=ori->next;
-    //il puntatore 1 è incrementato 2 volte e p2 solo una volta
     while(p1!=NULL){
         p1=p1->next;
         if(p1!=NULL){
@@ -99,19 +99,16 @@ void DividiLista(Filtrate *ori, Filtrate **prima, Filtrate **seconda){
             p2=p2->next;
         }
     }
-    //p2 si trova a metà lista
     *prima = ori;
     *seconda=p2->next;
-    p2->next=NULL;//tronco la lista
+    p2->next=NULL;
 }
 
 void MergeSort(Filtrate **f){
     Filtrate *testa = *f,*p1,*p2;
-    //caso base
     if((testa==NULL)||(testa->next==NULL)){
         return;
     }
-    //funzione che divide la lista in 2
     DividiLista(testa,&p1,&p2);
     MergeSort(&p1);
     MergeSort(&p2);
@@ -119,8 +116,9 @@ void MergeSort(Filtrate **f){
 }
 
 
-//FUNZIONI ALBERI ROSSO NERI
+//FUNCTIONS RED BLACK TREES
 
+//print tree
 void StampaAlbero(Albero *T,RBTree *x){
     //stampa l'albero filtrato ordinato
     if(x != T->nil){
@@ -164,7 +162,7 @@ void LeftRotate(Albero *T, RBTree *x){
     x->p = y;
 }
 
-//funzioni per l'inserimento -> teta(log(n))
+//fixup insert red black tree-> teta(log(n))
 void RBInsertFixup(Albero *T, RBTree *z){
     RBTree *x,*y;
     if(z==T->root)
@@ -174,7 +172,7 @@ void RBInsertFixup(Albero *T, RBTree *z){
         if(x->colore==red){
             if(x == x->p->left) {
                 y = x->p->right;
-                //caso 1
+                //case 1
                 if (y->colore == red) {
                     x->colore = black;
                     y->colore = black;
@@ -182,20 +180,20 @@ void RBInsertFixup(Albero *T, RBTree *z){
                     RBInsertFixup(T, x->p);
                     return;
                 }
-                    //caso 2
+                    //case 2
                 else if (z == x->right) {
                     z = x;
                     LeftRotate(T, z);
                     x = z->p;
                 }
-                //caso 3
+                //case 3
                 x->colore = black;
                 x->p->colore = red;
                 RightRotate(T, x->p);
             }
             else{
                 y = x->p->left;
-                //caso 1
+                //case 1
                 if (y->colore == red) {
                     x->colore = black;
                     y->colore = black;
@@ -203,13 +201,13 @@ void RBInsertFixup(Albero *T, RBTree *z){
                     RBInsertFixup(T, x->p);
                     return;
                 }
-                    //caso 2
+                    //case 2
                 else if (z == x->left) {
                     z = x;
                     RightRotate(T, z);
                     x = z->p;
                 }
-                //caso 3
+                //case 3
                 x->colore = black;
                 x->p->colore = red;
                 LeftRotate(T, x->p);
@@ -217,12 +215,11 @@ void RBInsertFixup(Albero *T, RBTree *z){
         }
     }
 }
-
-void RBInsert(Albero *T, RBTree *z){//T radice dell'albero e z nodo da inserire
+//T -> tree's root, z -> knot to insert
+void RBInsert(Albero *T, RBTree *z){
     RBTree  *y,*x;
     y = T->nil;
     x = T->root;
-    //scorre l'albero fino alle foglie
     while(x!=T->nil){
         y = x;
         if(strcmp(z->parola, x->parola)<0)
@@ -231,10 +228,8 @@ void RBInsert(Albero *T, RBTree *z){//T radice dell'albero e z nodo da inserire
             x = x->right;
     }
     z->p = y;
-    //se  l'albero è vuoto z è la radice
     if(y == T->nil)
         T->root = z;
-        //se non è vuoto lo metto nella posizione giusta
     else if(strcmp(z->parola, y->parola)<0)
         y->left = z;
     else
@@ -242,21 +237,19 @@ void RBInsert(Albero *T, RBTree *z){//T radice dell'albero e z nodo da inserire
     z->left = T->nil;
     z->right = T->nil;
     z->colore = red;
-    //aggiusto l'albero
     RBInsertFixup(T,z);
 }
 
-//dealloca l'albero in ingresso -> teta(n) con n lunghezza dell'albero
+//frees the memory allocated for the tree -> teta(n) whit n leght of the tree
 void DeallocaAlbero(Albero *T, RBTree *x){
     if(x == T->nil)
         return;
     DeallocaAlbero(T, x->left);
     DeallocaAlbero(T, x->right);
-    //segno in una coda quelli da eliminare
     free(x);
 }
 
-//ricerca nell'albero la parola con il nodo desiderato teta(log(n))
+//searches the tree for the word, returning the node that contains it -> teta(log(n))
 RBTree *RicercaInAlbero(Albero *T, RBTree *x, char *key){
     if(x == T->nil || strcmp(key, x->parola)==0)
         return x;
@@ -267,40 +260,41 @@ RBTree *RicercaInAlbero(Albero *T, RBTree *x, char *key){
 }
 
 
-//FUNZIONI WORDCHECKER
+//WORDCHECKER FUNCTIONS
 
-//inserisce un simbolo nella lista dei simboli non presenti o ne restituisce la testa se c'è già, può essere migliorato con una hashtable
+//inserts a symbol into the list of symbols not present or returns its head if already present
 NotIn *InserisciNotIn(char s, NotIn **No, int *mod){
     NotIn *corr=*No;
     while(corr!=NULL){
-        if(corr->Simbolo==s)//se lo trovo esco
+        if(corr->Simbolo==s)
             return *No;
-        corr=corr->next;//se non lo trovo scorro
+        corr=corr->next;
     }
-    //arrivo qui se sono a fine lista e testa = null
-    NotIn *new = (NotIn*)malloc(sizeof(NotIn));//alloco nuovo simbolo
+    
+    NotIn *new = (NotIn*)malloc(sizeof(NotIn));
     new->Simbolo=s;
     new->next=*No;
-    mod[1]++;//indico che notIn è stato modifcato e lo incremento per ogni simbolo nuovo inserito
+    mod[1]++;
     return new;
 }
 
-//inserisce la nuova lettera se non c'è e la inizializza o ritarna il nodo che mi interessa
+/* inserts the new letter into the list of existing letters, if it is not already there. 
+Returns the target letter node. */
 Inside *InserisciPresenti(char s, Inside **presenti, int l, int *mod){
     Inside *curr=*presenti;
     int i;
-    while(curr!=NULL){//scorro la lista e se trovo il simbolo lo restituisco
+    while(curr!=NULL){
         if(curr->Simbolo==s)
             return curr;
         curr=curr->next;
     }
-    //se non lo trovo lo inizializzo, lo inserisco in testa e lo restituisco
-    mod[2]=1;//indico che presenti è stato modificato e lo incremento per ogni nuovo simbolo
-    Inside *new = (Inside*)malloc(sizeof(Inside)+l+1);//+ l per il vettore di int
+    
+    mod[2]=1;
+    Inside *new = (Inside*)malloc(sizeof(Inside)+l+1);
     new->Simbolo=s;
     new->min=0;
     new->esatto=0;
-    new->alterato='1';//quando inserisco un nuovo elemento lo inizializzo come alterato (cioè che va controllato)
+    new->alterato='1';
     for(i=0;i<l;i++)
         new->posS[i]='0';
     new->posS[l]='\0';
@@ -309,30 +303,28 @@ Inside *InserisciPresenti(char s, Inside **presenti, int l, int *mod){
     return new;
 }
 
-//aggiorna i vincoli dopo aver calcolato i risultati +/|
+//update the constraints after calculating the "+ / |" results
 void AggiornaVincoli(char *ris, char *sim, int *rip, int l,char *giusta,Inside **presenti,NotIn **No, int *mod){
     Inside *sup;
     int n,flag;
     int controllata[l],i,k,j;
-    //inizializzo controllata, un vettore che tiene conto del fatto che la variabile sia stata contollata o meno e lo inizializzo tutto a 0
     for(i=0;i<l;i++)
         controllata[i]=0;
 
     for(i=0;i<l;i++){
         k=0;
-        //controllo se il simbolo c'è e mi posiziono su di esso in caso affermativo
         while(lett[i]!=sim[k] && sim[k]!='\0' && sim[k]!='*')
             k++;
         if(sim[k]=='\0' || sim[k]=='*'){
-            *No = InserisciNotIn(lett[i], No, mod);//se non lo trovo lo metto tra i simboli che non ci sono e acquisisco la nuova testa
-            controllata[i]=1; //ho controllato il simbolo e so che non c'è
+            *No = InserisciNotIn(lett[i], No, mod);
+            controllata[i]=1;
         }else{
             flag=0;
-            sup = InserisciPresenti(lett[i], presenti, l, mod);//acquisisce il simbolo o lo inserisce se non è presente
-            n = rip[k];//mi copio il contatore di quel simbolo
+            sup = InserisciPresenti(lett[i], presenti, l, mod);
+            n = rip[k];
             for(j=i;j<l;j++) {
-                if (ris[j] == '+' && lett[j]==sup->Simbolo && controllata[j]==0){//se il risultato è +, e il simbolo è quello considerato e non lo ho già controllata
-                    mod[0]=1;//indico che giusta è stato modificato
+                if (ris[j] == '+' && lett[j]==sup->Simbolo && controllata[j]==0){
+                    mod[0]=1;
                     giusta[j] = sup->Simbolo;
                     controllata[j]=1;
                     n--;
@@ -348,19 +340,19 @@ void AggiornaVincoli(char *ris, char *sim, int *rip, int l,char *giusta,Inside *
                 }
             }
             if(flag==0){
-                if(sup->min<rip[k]-n){//se cambio il min inserisco il nuovo min e segno che il simbolo è stato alterato
+                if(sup->min<rip[k]-n){
                     sup->min=rip[k]-n;
                     sup->alterato='1';
                 }
             }
             else{
-                if(sup->esatto==0){//se sup esatto è ancora uguale a 0 lo modifico con il nuovo esatto e segno che il simbolo è stato alterato
+                if(sup->esatto==0){
                     sup->esatto=rip[k]-n;
                     sup->alterato='1';
                 }
             }
             if(sup->alterato=='1')
-                mod[2]=1;//se il simbolo è stato alterato mi segno che dovrà essere controllato durante il filtraggio
+                mod[2]=1;
         }
     }
 }
@@ -772,18 +764,17 @@ void NuovaPartita(Albero *T,int l){
 
 int main(){
     int l;
-    //inizializzazione albero parole possibili
+    //allocation memory for Tree of potential words and init of the nil knot
     Albero *a=(Albero*)malloc(sizeof(Albero));
     a->nil = (RBTree *) malloc(sizeof(RBTree)+2);
     a->nil->colore=black;
-    //do un valore non accettato alla parola di nil in modo da aiutare la funzione ricerca dopo
     a->nil->parola[0]=' ';
     a->nil->parola[1]='\0';
     a->root=a->nil;
 
     contenitore=scanf("%d",&l);
 
-    //inizializzazione lett
+    //init variables
     if(l<17){
         lett = (char*)malloc(sizeof(char)*18);
     }else{
@@ -791,7 +782,7 @@ int main(){
     }
     contenitore=scanf("%s",lett);
 
-    //inizializzazione albero parole ammissibili
+    //init Tree of potential words
     while(strcmp(lett,"+nuova_partita")!=0 && strcmp(lett,"+inserisci_inizio")!=0){
         RBTree *new = (RBTree*)malloc(sizeof(RBTree)+l+1);//inizializzo un nuovo nodo dell'albero
         strcpy(new->parola,lett);
@@ -799,20 +790,19 @@ int main(){
         contenitore=scanf("%s",lett);
     }
 
-    //gestione programma
+    //start new game or insert new possible words
     do{
         if(strcmp(lett,"+nuova_partita")==0)
             NuovaPartita(a,l);
         else if(strcmp(lett,"+inserisci_inizio")==0){
-            InserisciInizio(a,l);//complessita teta(n) con n lunghezza input
+            InserisciInizio(a,l);
         }
     }while(scanf("%s", lett) != EOF);
 
-    //dealloco albero
+    //free all the memory
     DeallocaAlbero(a,a->root);
     free(a->nil);
     free(a);
-    //dealloco variabile di lettura
     free(lett);
     return 0;
 }
