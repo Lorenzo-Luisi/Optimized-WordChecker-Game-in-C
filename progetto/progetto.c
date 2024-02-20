@@ -5,13 +5,13 @@ char *lett;
 int contenitore,counter;
 
 /* Start of tree structure declarations */
-//knot
+//Knot
 typedef struct node{
     enum {red , black} colore;
     struct node *p,*left, *right;
     char parola[];
 }RBTree;
-//tree
+//Tree
 typedef struct{
     struct node *nil;
     struct node *root;
@@ -25,7 +25,7 @@ typedef struct nodo{
 
 
 /* Start of list structure of the constraints declaration */
-//list of letters present in the word
+//List of letters present in the word
 typedef struct p{
     struct p *next;
     char Simbolo;
@@ -34,7 +34,7 @@ typedef struct p{
     char alterato;
     char posS[];
 }Inside;
-//list of letters not present in the word
+//List of letters not present in the word
 typedef struct n{
     struct n *next;
     char Simbolo;
@@ -43,7 +43,7 @@ typedef struct n{
 //SORTING ALGORITHMS
 
 //QUICKSORT
-//sort the word (array, start, end)
+//Sort the word (array, start, end)
 int Partition(char *A, int p, int r){
     char swap;
     int j;
@@ -118,9 +118,8 @@ void MergeSort(Filtrate **f){
 
 //FUNCTIONS RED BLACK TREES
 
-//print tree
+//Print tree
 void StampaAlbero(Albero *T,RBTree *x){
-    //stampa l'albero filtrato ordinato
     if(x != T->nil){
         StampaAlbero(T,x->left);
         printf("%s\n",x->parola);
@@ -162,7 +161,7 @@ void LeftRotate(Albero *T, RBTree *x){
     x->p = y;
 }
 
-//fixup insert red black tree-> teta(log(n))
+//Fixup insert red black tree-> teta(log(n))
 void RBInsertFixup(Albero *T, RBTree *z){
     RBTree *x,*y;
     if(z==T->root)
@@ -240,7 +239,7 @@ void RBInsert(Albero *T, RBTree *z){
     RBInsertFixup(T,z);
 }
 
-//frees the memory allocated for the tree -> teta(n) whit n leght of the tree
+//Frees the memory allocated for the tree -> teta(n) whit n leght of the tree
 void DeallocaAlbero(Albero *T, RBTree *x){
     if(x == T->nil)
         return;
@@ -249,7 +248,7 @@ void DeallocaAlbero(Albero *T, RBTree *x){
     free(x);
 }
 
-//searches the tree for the word, returning the node that contains it -> teta(log(n))
+//Searches the tree for the word, returning the node that contains it -> teta(log(n))
 RBTree *RicercaInAlbero(Albero *T, RBTree *x, char *key){
     if(x == T->nil || strcmp(key, x->parola)==0)
         return x;
@@ -262,7 +261,7 @@ RBTree *RicercaInAlbero(Albero *T, RBTree *x, char *key){
 
 //WORDCHECKER FUNCTIONS
 
-//inserts a symbol into the list of symbols not present or returns its head if already present
+//Inserts a symbol into the list of symbols not present or returns its head if already present
 NotIn *InserisciNotIn(char s, NotIn **No, int *mod){
     NotIn *corr=*No;
     while(corr!=NULL){
@@ -278,7 +277,7 @@ NotIn *InserisciNotIn(char s, NotIn **No, int *mod){
     return new;
 }
 
-/* inserts the new letter into the list of existing letters, if it is not already there. 
+/* Inserts the new letter into the list of existing letters, if it is not already there. 
 Returns the target letter node. */
 Inside *InserisciPresenti(char s, Inside **presenti, int l, int *mod){
     Inside *curr=*presenti;
@@ -303,7 +302,7 @@ Inside *InserisciPresenti(char s, Inside **presenti, int l, int *mod){
     return new;
 }
 
-//update the constraints after calculating the "+ / |" results
+//Update the constraints after calculating the "+ / |" results
 void AggiornaVincoli(char *ris, char *sim, int *rip, int l,char *giusta,Inside **presenti,NotIn **No, int *mod){
     Inside *sup;
     int n,flag;
@@ -357,15 +356,15 @@ void AggiornaVincoli(char *ris, char *sim, int *rip, int l,char *giusta,Inside *
     }
 }
 
-//funzione che date: una parola ordinata da controllare, il vettore che conterrà le lettere della parola e un vettore per tener traccia delle ripetizioni, modifica questi ultimi 2
+//Function that updates the vectors: of the repetitions of a letter and of the alphanumeric value of the letter present in the inserted word comparing it with the target word -> teta(n) with n lenght of the word
 void contaPres(char *ord,char *sim, int *rip, int n){
-    int i,j=0;//riplocale viene usato localmente nella funzione
-    //inizializzo rip a 0
+    int i,j=0;
+
     for(i=0;i<n;i++) {
-        rip[i] = 0;//inizializza le presenze tutte a 0
-        sim[i] = '*';//inizializza i simboli tutti a 0
+        rip[i] = 0;
+        sim[i] = '*';
     }
-    sim[0]=ord[0];//inizizalizzo teta(l)
+    sim[0]=ord[0];
     for(i=0;i<n;i++){
         if(sim[j]==ord[i]){
             rip[j]++;
@@ -377,7 +376,7 @@ void contaPres(char *ord,char *sim, int *rip, int n){
     }
 }
 
-//inserisce tutte le parole in input -> teta(n)
+//Insert all the input words -> teta(n)
 void InserisciInizio(Albero *T, int l){
     contenitore = scanf("%s",lett);
     while(strcmp(lett,"+inserisci_fine")!=0){
@@ -392,27 +391,24 @@ void InserisciInizio(Albero *T, int l){
 //caso pessimo teta(4l)
 char *Confronto(int l, char *rif, int *rip, char *sim, char *ris){
     int i,j,riplocale[l];
-    //rip e sim contengono i dati del riferimento
-    memcpy(riplocale, rip, sizeof(int)*l);//copia rip in riplocale
-    //controllo i +
+    memcpy(riplocale, rip, sizeof(int)*l);
+
     for(i=0;i<l;i++) {
         j = 0;
         if (lett[i] == rif[i]) {
             ris[i] = '+';
-            while(sim[j] != lett[i] && sim[j] != '*')//mi posiziono sul simbolo giusto
+            while(sim[j] != lett[i] && sim[j] != '*')
                 j++;
             riplocale[j]--;
         }else{
             ris[i]='*';
         }
     }
-    //ora cerco quelli in posizione scorretta
+   
     for (i = 0; i < l; i++){
         j=0;
-        //cerco il carattere di interesse
         while(sim[j]!=lett[i] && sim[j]!='\0')
-            j++;//mi posiziono sul carattere di interesse
-        //se i simboli non sono uguali e ci sono ancora delle istanze di quel simbolo
+            j++;
         if(ris[i]!='+') {
             if (rif[i] != lett[i] && sim[j] != '\0' && riplocale[j] != 0) {
                 ris[i] = '|';
@@ -427,66 +423,56 @@ char *Confronto(int l, char *rif, int *rip, char *sim, char *ris){
 //controlla che non ci siano lettere non ammesse in RIF
 int ControllaNotIn(NotIn *Not, int *mod, char *par,int l){
     int a=mod[1],i;
-    while(a>0){//controllo solo gli ultimi mod[1] simboli inseriti
-        for(i=0;i<l;i++)//controllo se il simbolo è nella parola e in caso affermativo restituisco 1
+    while(a>0){
+        for(i=0;i<l;i++)
             if(par[i]==Not->Simbolo)
                 return 1;
-        //se il simbolo non è nella parola controllo il simbolo successivo fino al termine dei simboli sa controllare
         Not=Not->next;
         a--;
     }
-    return 0;//se la parola non contiene un simbolo che non può esserci in rif, allora ha superato questa fase di flitraggio e passo alla prossima
+    return 0;
 }
 
 //scorre tutte le parole presenti che sono state modificate e ne controlla i vincoli
 int ControllaPresenti(Inside *In,int l,char *x){
-    //mi copio la parola in a e la riordino
     int i,n;
     while(In!=NULL){
-        n=0;//variabile che conta le ripetizioni di un determinato simbolo nella parola
+        n=0;
         if(In->alterato=='1'){
-            for (i = 0; i < l; i++) {//conto quante ripetizioni del simbolo ci sono e controllo in contemporanea le posizioni sbagliate
-                if(In->posS[i]=='1' && x[i]==In->Simbolo)//se so che i è una posizione sbagliata e ci trovo quel simbolo esco
+            for (i = 0; i < l; i++) {
+                if(In->posS[i]=='1' && x[i]==In->Simbolo)
                     return 1;
-                if (x[i] == In->Simbolo)//conto quante volte viene ripetuto il simbolo
+                if (x[i] == In->Simbolo)
                     n++;
             }
-            if (In->esatto != 0 && In->esatto != n)//se non sono uguali ritorno 1
+            if (In->esatto != 0 && In->esatto != n)
                 return 1;
-            else if (In->min > n)//se ci sono troppe poche ripetizioni rifiuto
+            else if (In->min > n)
                 return 1;
         }
-        In=In->next;//scorro avanti
+        In=In->next;
     }
-    //se arrivo qua significa che ha passato tutti i test
     return 0;
 }
 
 //Controlla se la parola in ingresso rispetta i vincoli
 int ControllaVincoli(int l,char *x,char *giusta,Inside *In, NotIn *Not, int *mod){
     int i;
-    //se notin è stato modificato controllo come prima cosa notIn
     if(mod[1]>0){
         if (ControllaNotIn(Not, mod, x, l) == 1)
             return 1;
     }
-
-    //se ho scoperto nuovi simboli allora controllo che la parola in esame corrisponda con essi
+    
     if(mod[0]>0){
-        //parte che scorre le giuste e le controlla una ad una
         for (i = 0; i < l; i++)
             if (x[i] != giusta[i] && giusta[i] != '*')
                 return 1;
     }
 
-    //se ho aggiunto delle parole in presenti ho sono state modificate allora entro
     if(mod[2]>0){
-        //controlla le parole presenti che sono state modificate
         if(ControllaPresenti(In, l, x)==1)
             return 1;
     }
-
-    //se sono arrivato fin qui ho superato tutti i test e quindi accetto la parola
     return 0;
 }
 
@@ -497,9 +483,9 @@ void Riempimento(Albero *T,RBTree *x, Filtrate **f, char *giusta, Inside *In, No
         if (ControllaVincoli(l, x->parola, giusta, In, Not, mod) == 0) {
             counter++;
             Filtrate *new = (Filtrate *) malloc(sizeof(Filtrate));
-            new->x = x;//punto al nodo dell'albero che ha passato i controlli
-            new->next = *f;//lo inserisco in testa
-            *f = new;//dico la che la nuova testa è new
+            new->x = x;
+            new->next = *f;
+            *f = new;
         }
         Riempimento(T, x->right, f, giusta, In, Not, l, mod);
     }
@@ -511,22 +497,19 @@ void Scremazione(Filtrate **f, char *giusta, Inside *In, NotIn *Not, int l, int 
     while(curr!=NULL) {
         if (ControllaVincoli(l, curr->x->parola, giusta, In, Not, mod) == 1) {
             if(prec==NULL){
-                //se prec è NULL significa che sto eliminando la testa
                 counter--;
-                elim=curr;//elim sarà il nodo da eliminare
+                elim=curr;
                 curr=curr->next;//vado avanti
-                free(elim);//elimino elim
-                *f=curr;//cambio la testa della lista delle filtrate
+                free(elim);
+                *f=curr;
             }else{
-                //se non sto eliminando la testa
                 counter--;
-                prec->next=curr->next;//colleco il precedente al successivo di curr
-                elim=curr;//elim diventa il nodo da eliminare
-                curr=curr->next;//scorro avanti
-                free(elim);//elimino
+                prec->next=curr->next;
+                elim=curr;
+                curr=curr->next;
+                free(elim);
             }
         }else{
-            //se non elimino scorro avanti
             prec=curr;
             curr=curr->next;
         }
@@ -539,11 +522,9 @@ void AggiornaFiltrate(Filtrate **filtr, char *giusta, Inside *In, NotIn *Not, Al
         Riempimento(T,T->root, filtr, giusta, In ,Not,l,mod);
     else
         Scremazione(filtr, giusta, In, Not, l, mod);
-    //azzero i flag dei modificatori
     mod[0]=0;
     mod[1]=0;
     mod[2]=0;
-    //reimposto gli alterati a 0
     while(In!=NULL){
         if(In->alterato=='1')
             In->alterato='0';
@@ -563,56 +544,44 @@ void StampaFiltrate(Filtrate *f){
 int ControllaNotInIntegrale(NotIn *Not,char *par, int l){
     int i;
     while(Not!=NULL){
-        for(i=0;i<l;i++)//controllo se il simbolo è nella parola e in caso affermativo restituisco 1
+        for(i=0;i<l;i++)
             if(par[i]==Not->Simbolo)
                 return 1;
-        //se il simbolo non è nella parola controllo il simbolo successivo fino al termine dei simboli sa controllare
         Not=Not->next;
     }
-    return 0;//se la parola non contiene un simbolo che non può esserci in rif, allora ha superato questa fase di flitraggio e passo alla prossima
+    return 0;
 }
 
 //controlla la parola con tutte le lettere in presenti
 int ControllaPresentiIntegrale(Inside *In, int l, char *par){
-    //mi copio la parola in a e la riordino
     int i,n;
     while(In!=NULL) {
-        n = 0;//variabile che conta le ripetizioni di un determinato simbolo nella parola
-        for (i = 0; i < l; i++) {//conto quante ripetizioni del simbolo ci sono e controllo in contemporanea le posizioni sbagliate
-            if (In->posS[i] == '1' && par[i] == In->Simbolo)//se so che i è una posizione sbagliata e ci trovo quel simbolo esco
+        n = 0;
+        for (i = 0; i < l; i++) {
+            if (In->posS[i] == '1' && par[i] == In->Simbolo)
                 return 1;
-            if (par[i] == In->Simbolo)//conto quante volte viene ripetuto il simbolo
+            if (par[i] == In->Simbolo)
                 n++;
         }
-        if (In->esatto != 0 && In->esatto != n)//se non sono uguali ritorno 1
+        if (In->esatto != 0 && In->esatto != n)
             return 1;
-        else if (In->min > n)//se ci sono troppe poche ripetizioni rifiuto
+        else if (In->min > n)
             return 1;
-        In = In->next;//scorro avanti
+        In = In->next;
     }
-    //se arrivo qua significa che ha passato tutti i test
     return 0;
 }
 
 //controlla tutti i vincoli senza tener conto di quali sono stati modificati per ultimi
 int ControllaVincoliIntegrale(int l, char *par, char *giusta, Inside *In, NotIn *Not){
     int i;
-    //se notin è stato modificato controllo come prima cosa notIn
     if (ControllaNotInIntegrale(Not, par, l) == 1)
         return 1;
-
-    //se ho scoperto nuovi simboli allora controllo che la parola in esame corrisponda con essi
-    //parte che scorre le giuste e le controlla una ad una
     for (i = 0; i < l; i++)
         if (par[i] != giusta[i] && giusta[i] != '*')
             return 1;
-
-    //se ho aggiunto delle parole in presenti ho sono state modificate allora entro
-    //controlla le parole presenti che sono state modificate
     if(ControllaPresentiIntegrale(In, l, par)==1)
         return 1;
-
-    //se sono arrivato fin qui ho superato tutti i test e quindi accetto la parola
     return 0;
 }
 
@@ -620,14 +589,14 @@ int ControllaVincoliIntegrale(int l, char *par, char *giusta, Inside *In, NotIn 
 void InserisciInizioGame(Albero *T,Filtrate **filtr,char *giusta,NotIn *Not,Inside *In, int l){
     contenitore = scanf("%s",lett);
     while(strcmp(lett,"+inserisci_fine")!=0){
-        RBTree *new = (RBTree *) malloc(sizeof(RBTree) + l + 1);//inizializzo un nuovo nodo dell'albero
+        RBTree *new = (RBTree *) malloc(sizeof(RBTree) + l + 1);
         strcpy(new->parola,lett);
-        RBInsert(T, new);//lo inserisco nell'albero
+        RBInsert(T, new);
         if(ControllaVincoliIntegrale(l, new->parola, giusta, In,  Not)==0){
             Filtrate *nuovo = (Filtrate*)malloc(sizeof(Filtrate));
-            nuovo->x=new;//punta al nodo appena creato
-            nuovo->next=*filtr;//lo inserisco in testa
-            *filtr=nuovo;//diventa la nuova testa
+            nuovo->x=new;
+            nuovo->next=*filtr;
+            *filtr=nuovo;
             counter++;
         }
         contenitore = scanf("%s",lett);
@@ -761,7 +730,7 @@ void NuovaPartita(Albero *T,int l){
     DeallocaPresenti(presenti);
 }
 
-
+//MAIN FUNCTION
 int main(){
     int l;
     //allocation memory for Tree of potential words and init of the nil knot
